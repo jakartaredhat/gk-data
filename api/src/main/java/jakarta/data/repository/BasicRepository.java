@@ -147,6 +147,15 @@ public interface BasicRepository<T, K> extends DataRepository<T, K> {
     Optional<T> findById(@By(ID) K id);
 
     /**
+     * Retrieves the entities with the given unique identifiers.
+     *
+     * @param ids a list of unique identifiers.
+     * @return the entities with the given unique identifiers.
+     */
+    @Query("where id(this) in :ids order by id(this)")
+    List<T> findByIdIn(@By(ID) List<K> ids);
+
+    /**
      * Retrieves all persistent entities of the specified type from the database.
      *
      * @return a stream of all entities; will never be {@code null}.
