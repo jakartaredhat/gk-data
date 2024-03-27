@@ -148,12 +148,16 @@ public interface BasicRepository<T, K> extends DataRepository<T, K> {
 
     /**
      * Retrieves the entities with the given unique identifiers.
+     * The returned list of entities is sorted by unique identifier
+     * in ascending order. If any of the unique identifiers is not
+     * found in the database, the returned list will be smaller
+     * than the supplied list of unique identifiers.
      *
      * @param ids a list of unique identifiers.
      * @return the entities with the given unique identifiers.
      */
     @Query("where id(this) in :ids order by id(this)")
-    List<T> findByIdIn(@By(ID) List<K> ids);
+    List<T> findByIdIn(@Param("ids") List<K> ids);
 
     /**
      * Retrieves all persistent entities of the specified type from the database.

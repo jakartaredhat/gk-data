@@ -144,7 +144,7 @@ If any element of a path expression evaluates to a null value, the whole path ex
 
 ==== Identifier expressions
 
-An _identifier expression_, with syntax given by `id_expression`, is assigned the type of the unique identifier of the queried entity, and evaluates to the unique identifier of a given record. An identifier expression is a synonym for a path expression with one element matching the identifier property of the queried entity type. An identifier expression may occur in the `select` clause, in the `order` clause, or as a scalar expression in the `where` clause.
+An _identifier expression_, with syntax given by `id_expression`, is assigned the type of the unique identifier of the queried entity and evaluates to the unique identifier of a given record. An identifier expression is a synonym for a path expression with one element matching the identifier property of the queried entity type. An identifier expression may occur in the `select` clause, in the `order` clause, or as a scalar expression in the `where` clause.
 
 ==== Function calls
 
