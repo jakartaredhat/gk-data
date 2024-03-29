@@ -132,6 +132,16 @@ record Pagination<T>(long page, int size, List<Sort<? super T>> sorts, Mode mode
     }
 
     @Override
+    public PageRequest<T> nextWithKey(Object... key) {
+        return new Pagination<>(page + 1, this.size, this.sorts, Mode.OFFSET, Cursor.forKey(key), requestTotal);
+    }
+
+    @Override
+    public PageRequest<T> previousWithKey(Object... key) {
+        return page()<=1 ? null : new Pagination<>(page - 1, this.size, this.sorts, Mode.OFFSET, Cursor.forKey(key), requestTotal);
+    }
+
+    @Override
     public String toString() {
         StringBuilder s = new StringBuilder(mode == Mode.OFFSET ? 100 : 150)
                 .append("PageRequest{page=").append(page)

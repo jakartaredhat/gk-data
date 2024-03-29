@@ -345,6 +345,32 @@ public interface PageRequest<T> {
     PageRequest<T> previous();
 
     /**
+     * <p>Returns a {@code PageRequest} requesting the next page
+     * if using cursor-based pagination. The given key must be the
+     * key of the last result on this page.</p>
+     *
+     * <p>Note that traversal of pages is usually done via
+     * {@link CursoredPage#nextPageRequest()}</p>
+     *
+     * @param key the key of the last result on this page.
+     * @return The next PageRequest.
+     */
+    PageRequest<T> nextWithKey(Object... key);
+
+    /**
+     * <p>Returns a {@code PageRequest} requesting the previous page
+     * if using cursor-based pagination. The given key must be the
+     * key of the first result on this page.</p>
+     *
+     * <p>Note that traversal of pages is usually done via
+     * {@link CursoredPage#previousPageRequest()}</p>
+     *
+     * @param key the key of the first result on this page.
+     * @return The next PageRequest.
+     */
+    PageRequest<T> previousWithKey(Object... key);
+
+    /**
      * <p>Creates a new page request with the same pagination information,
      * but with the specified page number.</p>
      *
