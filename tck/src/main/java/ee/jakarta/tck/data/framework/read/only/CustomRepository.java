@@ -16,10 +16,10 @@
 package ee.jakarta.tck.data.framework.read.only;
 
 import java.util.List;
-import java.util.Set;
 
 import jakarta.data.repository.Delete;
 import jakarta.data.repository.Insert;
+import jakarta.data.repository.Query;
 import jakarta.data.repository.Repository;
 
 /**
@@ -34,9 +34,11 @@ public interface CustomRepository {
     @Insert
     void add(List<NaturalNumber> list);
 
-    int countByIdIn(Set<Long> ids);
+    @Query("select count(this) where id in ?1")
+    long countByIdIn(List<Long> ids);
 
-    boolean existsByIdIn(Set<Long> ids);
+    @Query("select count(this)>0 where id in ?1")
+    boolean existsByIdIn(List<Long> ids);
 
     @Delete
     void remove(List<NaturalNumber> list);

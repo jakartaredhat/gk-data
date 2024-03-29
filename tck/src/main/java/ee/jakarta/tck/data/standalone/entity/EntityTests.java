@@ -891,12 +891,12 @@ public class EntityTests {
 
     @Assertion(id = "133", strategy = "Use a repository method with the In keyword.")
     public void testIn() {
-        Stream<NaturalNumber> nonPrimes = positives.findByNumTypeInOrderByIdAsc(Set.of(NumberType.COMPOSITE, NumberType.ONE),
+        Stream<NaturalNumber> nonPrimes = positives.findByNumTypeInOrderByIdAsc(List.of(NumberType.COMPOSITE, NumberType.ONE),
                                                                                 Limit.of(9));
         assertEquals(List.of(1L, 4L, 6L, 8L, 9L, 10L, 12L, 14L, 15L),
                      nonPrimes.map(NaturalNumber::getId).collect(Collectors.toList()));
 
-        Stream<NaturalNumber> primes = positives.findByNumTypeInOrderByIdAsc(Collections.singleton(NumberType.PRIME),
+        Stream<NaturalNumber> primes = positives.findByNumTypeInOrderByIdAsc(Collections.singletonList(NumberType.PRIME),
                                                                              Limit.of(6));
         assertEquals(List.of(2L, 3L, 5L, 7L, 11L, 13L),
                      primes.map(NaturalNumber::getId).collect(Collectors.toList()));
@@ -905,7 +905,7 @@ public class EntityTests {
     @Assertion(id = "133", strategy = "Use a repository method with the IgnoreCase keyword.")
     public void testIgnoreCase() {
         Stream<AsciiCharacter> found = characters.findByHexadecimalIgnoreCaseBetweenAndHexadecimalNotIn("4c", "5A",
-                                                                                                        Set.of("5"),
+                                                                                                        List.of("5"),
                                                                                                         Order.by(Sort.asc("hexadecimal")));
 
         assertEquals(List.of(Character.valueOf('L'), // 4c
@@ -1374,11 +1374,11 @@ public class EntityTests {
 
     @Assertion(id = "133", strategy = "Use count and exists methods where the primary entity class is inferred from the lifecycle methods.")
     public void testPrimaryEntityClassDeterminedByLifeCycleMethods() {
-        assertEquals(4, customRepo.countByIdIn(Set.of(2L, 15L, 37L, -5L, 60L)));
+        assertEquals(4, customRepo.countByIdIn(List.of(2L, 15L, 37L, -5L, 60L)));
 
-        assertEquals(true, customRepo.existsByIdIn(Set.of(17L, 14L, -1L)));
+        assertEquals(true, customRepo.existsByIdIn(List.of(17L, 14L, -1L)));
 
-        assertEquals(false, customRepo.existsByIdIn(Set.of(-10L, -12L, -14L)));
+        assertEquals(false, customRepo.existsByIdIn(List.of(-10L, -12L, -14L)));
     }
 
     @Assertion(id = "458", strategy = "Use a repository method with a JDQL query that uses the NOT operator with LIKE, IN, and BETWEEN.")

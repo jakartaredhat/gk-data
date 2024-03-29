@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import jakarta.data.repository.DataRepository;
+import jakarta.data.repository.Delete;
 import jakarta.data.repository.Find;
+import jakarta.data.repository.Query;
 import jakarta.data.repository.Repository;
 import jakarta.data.repository.Save;
 import jakarta.validation.Valid;
@@ -34,15 +36,18 @@ public interface Rectangles extends DataRepository<Rectangle, String> {
 
     @Save
     List<Rectangle> saveAll(@Valid List<Rectangle> entities);
-    
+
+    @Query("select count(this)")
     @PositiveOrZero
     long countBy();
 
     @Find
     Stream<Rectangle> findAll();
-    
+
+    @Delete
     void deleteAllBy();
 
+    @Query("order by id asc")
     @Size(min = 0, max = 3)
     List<Rectangle> findAllByOrderByIdAsc();
 }

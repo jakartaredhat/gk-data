@@ -27,13 +27,11 @@ import jakarta.data.repository.DataRepository;
 import jakarta.data.repository.Delete;
 import jakarta.data.repository.Find;
 import jakarta.data.repository.Insert;
-import jakarta.data.repository.OrderBy;
 import jakarta.data.repository.Param;
 import jakarta.data.repository.Query;
 import jakarta.data.repository.Repository;
 import jakarta.data.repository.Save;
 import jakarta.data.repository.Update;
-import ee.jakarta.tck.data.standalone.persistence.Product.Department;
 
 @Repository
 public interface Catalog extends DataRepository<Product, String> {
@@ -65,29 +63,39 @@ public interface Catalog extends DataRepository<Product, String> {
     @Delete
     void deleteById(@By(ID) String productNum);
 
+    @Query("delete Product where productNum like ?1")
     long deleteByProductNumLike(String pattern);
 
-    int countByPriceGreaterThanEqual(Double price);
+    @Query("select count(this) where price >= ?1")
+    long countByPriceGreaterThanEqual(Double price);
 
-    int countBySurgePriceGreaterThanEqual(Double price);
+    // rejected at compile time since surgePrice is @Transient
+//    @Query("select count(this) where surgePrice >= ?1")
+//    long countBySurgePriceGreaterThanEqual(Double price);
 
-    @OrderBy("name")
-    Product[] findByDepartmentsContains(Department department);
+    // Contains operator removed from Jakarta Data
+//    @OrderBy("name")
+//    Product[] findByDepartmentsContains(Department department);
 
+    @Query("where departments is empty")
     Stream<Product> findByDepartmentsEmpty();
 
     @Query("WHERE LENGTH(name) = ?1 AND price < ?2 ORDER BY name")
     List<Product> findByNameLengthAndPriceBelow(int nameLength, double maxPrice);
 
+    @Query("where name like ?1")
     List<Product> findByNameLike(String name);
 
-    @OrderBy(value = "price", descending = true)
+    @Query("where price is not null and price <= ?1 order by price desc")
     Stream<Product> findByPriceNotNullAndPriceLessThanEqual(double maxPrice);
 
+    @Query("where price is null")
     List<Product> findByPriceNull();
 
+    @Query("where productNum between ?1 and ?2")
     List<Product> findByProductNumBetween(String first, String last, Order<Product> sorts);
 
+    @Query("where productNum like ?1")
     List<Product> findByProductNumLike(String productNum);
 
 //    EntityManager getEntityManager();

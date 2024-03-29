@@ -17,7 +17,6 @@ package ee.jakarta.tck.data.framework.read.only;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import jakarta.data.Limit;
@@ -46,8 +45,10 @@ public interface AsciiCharacters extends DataRepository<AsciiCharacter, Long>, I
     @Query("ORDER BY id ASC")
     Stream<AsciiCharacter> alphabetic(Limit limit);
 
-    int countByHexadecimalNotNull();
+    @Query("select count(this) where hexadecimal is not null")
+    long countByHexadecimalNotNull();
 
+    @Query("select count(this)>0 where thisCharacter = ?1")
     boolean existsByThisCharacter(char ch);
 
     @Find
@@ -57,26 +58,42 @@ public interface AsciiCharacters extends DataRepository<AsciiCharacter, Long>, I
     Optional<AsciiCharacter> find(@By("thisCharacter") char ch,
                                   @By("hexadecimal") String hex);
 
+    @Query("where hexadecimal like '%'||?1||'%' and isControl <> ?2")
     List<AsciiCharacter> findByHexadecimalContainsAndIsControlNot(String substring, boolean isPrintable);
 
+    @Query("where lower(hexadecimal) between lower(?1) and lower(?2) and hexadecimal not in ?3")
     Stream<AsciiCharacter> findByHexadecimalIgnoreCaseBetweenAndHexadecimalNotIn(String minHex,
                                                                                  String maxHex,
-                                                                                 Set<String> excludeHex,
+                                                                                 List<String> excludeHex,
                                                                                  Order<AsciiCharacter> sorts);
-
+    @Query("where lower(hexadecimal) = lower(?1)")
     AsciiCharacter findByHexadecimalIgnoreCase(String hex);
 
+    @Query("where isControl = true and numericValue between ?1 and ?2")
     AsciiCharacter findByIsControlTrueAndNumericValueBetween(int min, int max);
 
+    @Query("where numericValue = ?1")
     Optional<AsciiCharacter> findByNumericValue(int id);
 
+    @Query("where numericValue between ?1 and ?2")
     Page<AsciiCharacter> findByNumericValueBetween(int min, int max, PageRequest<AsciiCharacter> pagination);
 
+    @Query("where numericValue <= ?1 and numericValue >= ?2")
     List<AsciiCharacter> findByNumericValueLessThanEqualAndNumericValueGreaterThanEqual(int max, int min);
 
-    AsciiCharacter[] findFirst3ByNumericValueGreaterThanEqualAndHexadecimalEndsWith(long minValue, String lastHexDigit, Sort<AsciiCharacter> sort);
+    @Query("where numericValue >= ?1 and right(hexadecimal, length(?2)) = ?2")
+    AsciiCharacter[] findByNumericValueGreaterThanEqualAndHexadecimalEndsWith(int minValue, String lastHexDigit, Sort<AsciiCharacter> sort, Limit limit);
 
-    Optional<AsciiCharacter> findFirstByHexadecimalStartsWithAndIsControlOrderByIdAsc(String firstHexDigit, boolean isControlChar);
+    default AsciiCharacter[] findFirst3ByNumericValueGreaterThanEqualAndHexadecimalEndsWith(int minValue, String lastHexDigit, Sort<AsciiCharacter> sort) {
+        return findByNumericValueGreaterThanEqualAndHexadecimalEndsWith(minValue , lastHexDigit, sort, Limit.of(3));
+    }
+
+    @Query("where left(hexadecimal, length(?1)) = ?1 and isControl = ?2 order by id asc")
+    List<AsciiCharacter> findByHexadecimalStartsWithAndIsControlOrderByIdAsc(String firstHexDigit, boolean isControlChar);
+
+    default Optional<AsciiCharacter> findFirstByHexadecimalStartsWithAndIsControlOrderByIdAsc(String firstHexDigit, boolean isControlChar) {
+        return findByHexadecimalStartsWithAndIsControlOrderByIdAsc(firstHexDigit, isControlChar).stream().findFirst();
+    }
 
     @Query("select thisCharacter where hexadecimal like '4_'" +
            " and hexadecimal not like '%0'" +

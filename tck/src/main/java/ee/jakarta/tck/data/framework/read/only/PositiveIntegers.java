@@ -17,7 +17,6 @@ package ee.jakarta.tck.data.framework.read.only;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import ee.jakarta.tck.data.framework.read.only.NaturalNumber.NumberType;
@@ -39,20 +38,26 @@ import jakarta.data.repository.Repository;
  */
 @Repository
 public interface PositiveIntegers extends BasicRepository<NaturalNumber, Long> {
+    @Query("select count(this) where id(this) < ?1")
     long countByIdLessThan(long number);
 
+    @Query("select count(this)>0 where id > ?1")
     boolean existsByIdGreaterThan(Long number);
 
+    @Query("where floorOfSquareRoot <> ?1 and id < ?2 order by numBitsRequired")
     CursoredPage<NaturalNumber> findByFloorOfSquareRootNotAndIdLessThanOrderByNumBitsRequiredDesc(long excludeSqrt,
                                                                                                   long eclusiveMax,
                                                                                                   PageRequest<NaturalNumber> pagination);
-
+    @Query("where isOdd=true and id <= ?1 order by id desc")
     List<NaturalNumber> findByIsOddTrueAndIdLessThanEqualOrderByIdDesc(long max);
 
+    @Query("where isOdd=false and id between ?1 and ?2")
     List<NaturalNumber> findByIsOddFalseAndIdBetween(long min, long max);
 
-    Stream<NaturalNumber> findByNumTypeInOrderByIdAsc(Set<NumberType> types, Limit limit);
+    @Query("where numType in ?1 order by id asc")
+    Stream<NaturalNumber> findByNumTypeInOrderByIdAsc(List<NumberType> types, Limit limit);
 
+    @Query("where numType = ?1 or floorOfSquareRoot = ?2")
     Stream<NaturalNumber> findByNumTypeOrFloorOfSquareRoot(NumberType type, long floor);
 
     @Find
