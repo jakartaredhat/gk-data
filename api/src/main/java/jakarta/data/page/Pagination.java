@@ -138,7 +138,7 @@ record Pagination<T>(long page, int size, List<Sort<? super T>> sorts, Mode mode
 
     @Override
     public PageRequest<T> previousWithKey(Object... key) {
-        return page()<=1 ? null : new Pagination<>(page - 1, this.size, this.sorts, Mode.OFFSET, Cursor.forKey(key), requestTotal);
+        return new Pagination<>(page > 1 ? page - 1 : 1, this.size, this.sorts, Mode.OFFSET, Cursor.forKey(key), requestTotal);
     }
 
     @Override
