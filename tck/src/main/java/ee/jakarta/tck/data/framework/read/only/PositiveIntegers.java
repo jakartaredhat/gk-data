@@ -26,6 +26,7 @@ import jakarta.data.page.CursoredPage;
 import jakarta.data.page.Page;
 import jakarta.data.page.PageRequest;
 import jakarta.data.repository.Find;
+import jakarta.data.repository.OrderBy;
 import jakarta.data.repository.Param;
 import jakarta.data.repository.Query;
 import jakarta.data.repository.BasicRepository;
@@ -44,11 +45,13 @@ public interface PositiveIntegers extends BasicRepository<NaturalNumber, Long> {
     @Query("select count(this)>0 where id > ?1")
     boolean existsByIdGreaterThan(Long number);
 
-    @Query("where floorOfSquareRoot <> ?1 and id < ?2 order by numBitsRequired")
+    @Query("where floorOfSquareRoot <> ?1 and id < ?2")
+    @OrderBy("numBitsRequired")
     CursoredPage<NaturalNumber> findByFloorOfSquareRootNotAndIdLessThanOrderByNumBitsRequiredDesc(long excludeSqrt,
                                                                                                   long eclusiveMax,
                                                                                                   PageRequest<NaturalNumber> pagination);
-    @Query("where isOdd=true and id <= ?1 order by id desc")
+    @Query("where isOdd=true and id <= ?1")
+    @OrderBy(value = "id", descending = true)
     List<NaturalNumber> findByIsOddTrueAndIdLessThanEqualOrderByIdDesc(long max);
 
     @Query("where isOdd=false and id between ?1 and ?2")
